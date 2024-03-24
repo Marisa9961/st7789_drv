@@ -22,6 +22,15 @@
 
 使用 `git clone` 即可将本项目克隆到本地，将源文件添加到项目中即可使用
 
+修改其中的`#define`宏定义即可正常使用
+
+|Define    |Description         |
+|----------|--------------------|
+|LCD_SPI   |SPI_Handler         |
+|LCD_CS    |Chip Select         |
+|LCD_DC    |Data Command Switch |
+|LCD_RST   |Reset               |
+
 ## 补充
 
 如有任何改进的提议，均可提出`Issue`或是`Pull request`

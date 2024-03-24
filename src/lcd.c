@@ -288,7 +288,7 @@ extern void LCD_drawString(uint8_t line, uint8_t col, char* str,
  */
 extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
                         uint16_t color) {
-    uint16_t x = (col - 1 + length) * FONT_W_ + 2;
+    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
     uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
     bool ZF = num == 0 ? true : false;
     bool SF = num < 0 ? true : false;
