@@ -1,8 +1,8 @@
 ﻿#ifndef __M_LCD_H__
 #define __M_LCD_H__
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 extern void LCD_init();
 extern void LCD_drawPoint(uint16_t x, uint16_t y, uint16_t color);
@@ -10,6 +10,7 @@ extern void LCD_drwaLine(uint16_t xbegin, uint16_t ybegin, uint16_t xend,
                          uint16_t yend, uint16_t color);
 extern void LCD_drawScreen(uint16_t xbegin, uint16_t ybegin, uint16_t xend,
                            uint16_t yend, uint16_t color);
+extern void LCD_drawCircle(uint16_t x, uint16_t y, uint8_t r, uint16_t color);
 extern void LCD_drawPicture(uint16_t x, uint16_t y, uint16_t width,
                             uint16_t height, uint8_t pic[]);
 extern void LCD_drawChar(uint16_t x, uint16_t y, char ch, uint16_t color);

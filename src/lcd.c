@@ -202,6 +202,25 @@ extern void LCD_drawScreen(uint16_t xbegin, uint16_t ybegin, uint16_t xend,
 }
 
 /**
+ * @brief  绘制实心圆
+ * @param x x坐标
+ * @param y y坐标
+ * @param r 半径
+ * @param color 颜色
+ */
+extern void LCD_drawCircle(uint16_t x, uint16_t y, uint8_t r, uint16_t color) {
+    for (uint8_t i = 0; i <= r; i++) {
+        uint16_t length = (uint16_t)sqrt(r * r - i * i);
+        uint16_t xbegin = x - length;
+        uint16_t yupper = y + i;
+        uint16_t xend = x + length;
+        uint16_t ylower = y - i;
+        LCD_drwaLine(xbegin, yupper, xend, yupper, color);
+        LCD_drwaLine(xbegin, ylower, xend, ylower, color);
+    }
+}
+
+/**
  * @brief  绘制图片
  * @param x x坐标
  * @param y y坐标
