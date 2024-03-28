@@ -286,7 +286,7 @@ extern void LCD_drawChar(uint16_t x, uint16_t y, char ch, uint16_t color) {
  * @param str 字符串
  * @param color 颜色
  */
-extern void LCD_drawString(uint8_t line, uint8_t col, char* str,
+extern void LCD_drawString(uint8_t line, uint8_t col, const char* str,
                            uint16_t color) {
     uint16_t x = (col - 1) * FONT_W_ + 2;
     uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
@@ -294,6 +294,30 @@ extern void LCD_drawString(uint8_t line, uint8_t col, char* str,
         LCD_drawChar(x, y, *str, color);
         x += FONT_W_;
         str++;
+    }
+}
+
+/**
+ * @brief  绘制无符号数
+ * @param line 行(1~5)
+ * @param col 列(1~20)
+ * @param num 数字
+ * @param length 长度
+ * @param color 颜色
+ */
+extern void LCD_drawUNum(uint8_t line, uint8_t col, uint32_t num,
+                         uint8_t length, uint16_t color) {
+    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
+    uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
+    for (uint8_t i = 0; i < length; i++) {
+        char ch = (char)(num % 10) + '0';
+        if (num == 0) {
+            LCD_drawChar(x, y, '0', color);
+        } else {
+            num /= 10;
+            LCD_drawChar(x, y, ch, color);
+        }
+        x -= FONT_W_;
     }
 }
 
