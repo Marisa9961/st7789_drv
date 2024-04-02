@@ -209,7 +209,7 @@ extern void LCD_drawScreen(uint16_t xbegin, uint16_t ybegin, uint16_t xend,
  * @param color 颜色
  */
 extern void LCD_drawCircle(uint16_t x, uint16_t y, uint8_t r, uint16_t color) {
-    for (uint8_t i = 0; i <= r; i++) {
+    for (uint8_t i = 0; i < r; i++) {
         uint16_t length = (uint16_t)sqrt(r * r - i * i);
         uint16_t xbegin = x - length;
         uint16_t yupper = y + i;
@@ -351,5 +351,46 @@ extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
             LCD_drawChar(x, y, ' ', color);
         }
         x -= FONT_W_;
+    }
+}
+
+/**
+ * @brief  绘制浮点数
+ * @param line 行(1~5)
+ * @param col 列(1~20)
+ * @param f_num 数字
+ * @param length 长度(>5)
+ * @param color 颜色
+ */
+extern void LCD_drawFloat(uint8_t line, uint8_t col, float f_num,
+                          uint8_t length, uint16_t color) {
+    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
+    uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
+    bool ZF = fabs(f_num) < 1 ? true : false;
+    bool SF = f_num < 0 ? true : false;
+    int32_t num = (int32_t)(f_num * 1000);
+
+    for (uint8_t i = 0; i < length; i++) {
+        char ch = fabs(num % 10) + '0';
+        if (num != 0) {
+            num /= 10;
+            LCD_drawChar(x, y, ch, color);
+        } else if (ZF) {
+            LCD_drawChar(x, y, '0', color);
+            if (i == 3) {
+                ZF = false;
+            }
+        } else if (SF) {
+            LCD_drawChar(x, y, '-', color);
+            SF = false;
+        } else {
+            LCD_drawChar(x, y, ' ', color);
+        }
+
+        x -= FONT_W_;
+        if (i == 2) {
+            LCD_drawChar(x, y, '.', color);
+            x -= FONT_W_;
+        }
     }
 }

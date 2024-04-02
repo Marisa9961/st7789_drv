@@ -20,11 +20,13 @@ extern void LCD_drawUNum(uint8_t line, uint8_t col, uint32_t num,
                          uint8_t length, uint16_t color);
 extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
                         uint16_t color);
+extern void LCD_drawFloat(uint8_t line, uint8_t col, float f_num,
+                          uint8_t length, uint16_t color);
 
 enum COLOR {
     COLOR_MILK = 0xFFFF,
     COLOR_BLACK = 0x0000,
-    COLOR_SKYBULE = 0x001F,
+    COLOR_AZURE = 0X5A9C,
     COLOR_PURPLE = 0XF81F,
     COLOR_BLOOD = 0xF800,
     COLOR_GREEN = 0x07E0,
