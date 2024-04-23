@@ -15,17 +15,33 @@ static const uint8_t FONT_H_ = 32;
  */
 static char ch_table[5][20] = {0};
 
-#define LCD_setCS_() writeGPIO(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET)
-#define LCD_resetCS_() writeGPIO(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET)
-#define LCD_setDC_() writeGPIO(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET)
-#define LCD_resetDC_() writeGPIO(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_RESET)
+#define LCD_setCS_()                                           \
+    do {                                                       \
+        writeGPIO(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET); \
+    } while (0)
 
-static void LCD_freshRST_() {
-    writeGPIO(LCD_RST_GPIO_Port, LCD_RST_Pin, GPIO_PIN_RESET);
-    delayMs(1);
-    writeGPIO(LCD_RST_GPIO_Port, LCD_RST_Pin, GPIO_PIN_SET);
-    delayMs(120);
-}
+#define LCD_resetCS_()                                           \
+    do {                                                         \
+        writeGPIO(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET); \
+    } while (0)
+
+#define LCD_setDC_()                                           \
+    do {                                                       \
+        writeGPIO(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET); \
+    } while (0)
+
+#define LCD_resetDC_()                                           \
+    do {                                                         \
+        writeGPIO(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_RESET); \
+    } while (0)
+
+#define LCD_freshRST_()                                            \
+    do {                                                           \
+        writeGPIO(LCD_RST_GPIO_Port, LCD_RST_Pin, GPIO_PIN_RESET); \
+        delayMs(1);                                                \
+        writeGPIO(LCD_RST_GPIO_Port, LCD_RST_Pin, GPIO_PIN_SET);   \
+        delayMs(120);                                              \
+    } while (0)
 
 static void LCD_writeREG_(const uint8_t data) {
     LCD_resetDC_();
@@ -232,7 +248,7 @@ extern void LCD_drawPicture(uint16_t x, uint16_t y, uint16_t width,
                             uint16_t height, uint8_t pic[]) {
     LCD_setAddress_(x, y, x + width, y + height);
     uint32_t k = 0;
-    for (uint32_t i = 0; i < height; i++) {
+    for (uint32_t i = 0; i < width; i++) {
         for (uint32_t j = 0; j < height; j++) {
             LCD_writeDAT_(pic + 2 * k, 2);
             k++;
@@ -241,7 +257,7 @@ extern void LCD_drawPicture(uint16_t x, uint16_t y, uint16_t width,
 }
 
 /**
- * @brief  绘制字符
+ * @brief  绘制字符(不可重叠)
  * @param x x坐标
  * @param y y坐标
  * @param ch 字符
@@ -321,6 +337,13 @@ extern void LCD_drawUNum(uint8_t line, uint8_t col, uint32_t num,
     }
 }
 
+int32_t LCD_abs(int32_t num) {
+    if (num < 0) {
+        num = -num;
+    }
+    return num;
+}
+
 /**
  * @brief  绘制有符号数
  * @param line 行(1~5)
@@ -337,7 +360,7 @@ extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
     bool SF = num < 0 ? true : false;
 
     for (uint8_t i = 0; i < length; i++) {
-        char ch = fabs(num % 10) + '0';
+        char ch = LCD_abs(num % 10) + '0';
         if (num != 0) {
             num /= 10;
             LCD_drawChar(x, y, ch, color);
@@ -371,7 +394,7 @@ extern void LCD_drawFloat(uint8_t line, uint8_t col, float f_num,
     int32_t num = (int32_t)(f_num * 1000);
 
     for (uint8_t i = 0; i < length; i++) {
-        char ch = fabs(num % 10) + '0';
+        char ch = LCD_abs(num % 10) + '0';
         if (num != 0) {
             num /= 10;
             LCD_drawChar(x, y, ch, color);
