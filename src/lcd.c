@@ -46,7 +46,7 @@ static char ch_table[5][20] = {0};
 static void LCD_writeREG_(const uint8_t data) {
     LCD_resetDC_();
     LCD_resetCS_();
-    tranSPI(LCD_SPI, &data, 1);
+    tranSPI(LCD_SPI, &data, sizeof(data));
     LCD_setCS_();
     LCD_setDC_();
 }
@@ -60,7 +60,7 @@ static void LCD_writeDAT_(const uint8_t data[], uint8_t num) {
 static void LCD_setColor_(const uint16_t color) {
     uint8_t color_array[2] = {color >> 8, color};
     LCD_resetCS_();
-    tranSPI(LCD_SPI, color_array, 2);
+    tranSPI(LCD_SPI, color_array, sizeof(color_array));
     LCD_setCS_();
 }
 
@@ -314,17 +314,23 @@ extern void LCD_drawString(uint8_t line, uint8_t col, const char* str,
 }
 
 /**
+ * @brief  获取x与y的实际坐标
+ */
+#define getX(col, length) (col - 1 + length - 1) * FONT_W_ + 2
+#define getY(line) LCD_H_ - (line * FONT_H_) - 4
+
+/**
  * @brief  绘制无符号数
- * @param line 行(1~5)
- * @param col 列(1~20)
+ * @param line 行(1-5)
+ * @param col 列(1-20)
  * @param num 数字
  * @param length 长度
  * @param color 颜色
  */
 extern void LCD_drawUNum(uint8_t line, uint8_t col, uint32_t num,
                          uint8_t length, uint16_t color) {
-    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
-    uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
+    uint16_t x = getX(col, length);
+    uint16_t y = getY(line);
     for (uint8_t i = 0; i < length; i++) {
         char ch = (char)(num % 10) + '0';
         if (num == 0) {
@@ -337,7 +343,12 @@ extern void LCD_drawUNum(uint8_t line, uint8_t col, uint32_t num,
     }
 }
 
-int32_t LCD_abs(int32_t num) {
+/**
+ * @brief  获取绝对值
+ * @param num 整形
+ * @return int32_t 
+ */
+static int32_t LCD_abs(int32_t num) {
     if (num < 0) {
         num = -num;
     }
@@ -346,16 +357,16 @@ int32_t LCD_abs(int32_t num) {
 
 /**
  * @brief  绘制有符号数
- * @param line 行(1~5)
- * @param col 列(1~20)
+ * @param line 行(1-5)
+ * @param col 列(1-20)
  * @param num 数字
  * @param length 长度
  * @param color 颜色
  */
 extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
                         uint16_t color) {
-    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
-    uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
+    uint16_t x = getX(col, length);
+    uint16_t y = getY(line);
     bool ZF = num == 0 ? true : false;
     bool SF = num < 0 ? true : false;
 
@@ -378,18 +389,30 @@ extern void LCD_drawNum(uint8_t line, uint8_t col, int32_t num, uint8_t length,
 }
 
 /**
+ * @brief  获取绝对值
+ * @param f_num 浮点数
+ * @return float_t 
+ */
+static float_t LCD_fabs(float_t f_num) {
+    if (f_num < 0) {
+        f_num = -f_num;
+    }
+    return f_num;
+}
+
+/**
  * @brief  绘制浮点数
- * @param line 行(1~5)
- * @param col 列(1~20)
+ * @param line 行(1-5)
+ * @param col 列(1-20)
  * @param f_num 数字
  * @param length 长度(>5)
  * @param color 颜色
  */
 extern void LCD_drawFloat(uint8_t line, uint8_t col, float f_num,
                           uint8_t length, uint16_t color) {
-    uint16_t x = (col - 1 + length - 1) * FONT_W_ + 2;
-    uint16_t y = LCD_H_ - (line * FONT_H_) - 4;
-    bool ZF = fabs(f_num) < 1 ? true : false;
+    uint16_t x = getX(col, length);
+    uint16_t y = getY(line);
+    bool ZF = LCD_fabs(f_num) < 1 ? true : false;
     bool SF = f_num < 0 ? true : false;
     int32_t num = (int32_t)(f_num * 1000);
 
