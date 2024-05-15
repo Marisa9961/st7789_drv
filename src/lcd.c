@@ -2,6 +2,8 @@
 
 #include "lcd_font.h"
 
+#define USE_CHAR_MEMORY 1
+
 SPI_HandleTypeDef* const LCD_SPI = &hspi3;
 
 static const uint16_t LCD_W_ = 320;
@@ -10,10 +12,12 @@ static const uint16_t LCD_H_ = 172;
 static const uint8_t FONT_W_ = 16;
 static const uint8_t FONT_H_ = 32;
 
+#ifdef USE_CHAR_MEMORY
 /**
  * @brief  存储屏幕状态表
  */
 static char ch_table[5][20] = {0};
+#endif
 
 #define LCD_setCS_()                                           \
     do {                                                       \
@@ -266,11 +270,15 @@ extern void LCD_drawPicture(uint16_t x, uint16_t y, uint16_t width,
 extern void LCD_drawChar(uint16_t x, uint16_t y, char ch, uint16_t color) {
     uint8_t col = (x - 2) / FONT_W_;
     uint8_t line = (LCD_H_ - y - 4) / FONT_H_ - 1;
+
+    #ifdef USE_CHAR_MEMORY
     if (ch == ch_table[line][col]) {
         return;
     } else {
         ch_table[line][col] = ch;
     }
+    #endif
+
     LCD_setAddress_(x, y, x + FONT_W_, y + FONT_H_);
 
     const uint16_t x_init = x;
